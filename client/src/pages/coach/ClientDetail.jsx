@@ -76,11 +76,8 @@ export default function ClientDetail() {
   }, [clientId]);
 
   const client = payload?.client;
-  const plans = payload?.plans || [];
   const latestMetric = payload?.latestMetric || null;
-  const recentMetrics = payload?.recentMetrics || [];
   const latestNutrition = payload?.latestNutrition || null;
-  const recentNutritionLogs = payload?.recentNutritionLogs || [];
 
   async function handleSaveComment(sessionId, coachComment) {
     setSavingCommentId(sessionId);
@@ -122,6 +119,9 @@ export default function ClientDetail() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link to="/coach/clients" className="secondary-button">
               Back to clients
+            </Link>
+            <Link to={`/coach/clients/${clientId}/review`} className="secondary-button">
+              Review by date
             </Link>
             <Link to={`/coach/clients/${clientId}/assign`} className="primary-button">
               Assign workout
@@ -272,111 +272,15 @@ export default function ClientDetail() {
             </article>
           </section>
 
-          <section className="grid gap-6 xl:grid-cols-2">
-            <article className="glass-panel p-6 sm:p-8">
-              <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Check-Ins</p>
-                <h2 className="mt-3 font-display text-2xl font-bold text-white">Latest body-metric history</h2>
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {recentMetrics.length ? (
-                  recentMetrics.map((metric) => (
-                    <div key={metric._id} className="rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-slate-200">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-medium text-white">{formatDate(metric.date)}</p>
-                        <p className="text-slate-300">
-                          {metricValue(metric.weight, ' kg')} | Energy {metricValue(metric.energyLevel, '/10')}
-                        </p>
-                      </div>
-                      <p className="mt-3 text-slate-300">
-                        Body fat {metricValue(metric.bodyFatPercent, '%')} | Sleep {metricValue(metric.sleepHours, ' hours')}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-5 text-sm text-slate-300">
-                    No body-metric history is available yet.
-                  </div>
-                )}
-              </div>
-            </article>
-
-            <article className="glass-panel p-6 sm:p-8">
-              <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Nutrition Logs</p>
-                <h2 className="mt-3 font-display text-2xl font-bold text-white">Latest intake history</h2>
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {recentNutritionLogs.length ? (
-                  recentNutritionLogs.map((log) => (
-                    <div key={log._id} className="rounded-3xl border border-white/10 bg-white/5 p-5 text-sm text-slate-200">
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <p className="font-medium text-white">{formatDate(log.date)}</p>
-                        <p className="text-slate-300">
-                          {metricValue(log.totalCalories)} cal | {metricValue(log.totalProtein, ' g')} protein
-                        </p>
-                      </div>
-                      <p className="mt-3 text-slate-300">
-                        Water {metricValue(log.waterLitres, ' L')} | {deltaValue(log.totalCalories, client.targetCalories)} | {deltaValue(log.totalProtein, client.targetProtein, 'g')}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-5 text-sm text-slate-300">
-                    No nutrition history is available yet.
-                  </div>
-                )}
-              </div>
-            </article>
-          </section>
-
-          <section className="glass-panel p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Workout Plans</p>
-                <h2 className="mt-3 font-display text-2xl font-bold text-white">Latest plan history</h2>
-              </div>
-              <Link to={`/coach/clients/${clientId}/assign`} className="secondary-button">
-                Create another plan
-              </Link>
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {plans.length ? (
-                plans.map((plan) => (
-                  <div key={plan._id} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                      <div>
-                        <p className="font-display text-xl font-semibold text-white">{plan.name}</p>
-                        <p className="mt-2 text-sm text-slate-300">
-                          Split: {plan.splitType || 'custom'}
-                        </p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          Week starts: {formatDate(plan.weekStartDate)}
-                        </p>
-                      </div>
-                      <div className="rounded-full border border-white/10 bg-slate-950/40 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-300">
-                        {plan.isActive ? 'Active' : 'Archived'}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-5 text-sm text-slate-300">
-                  No workout plans have been assigned yet.
-                </div>
-              )}
-            </div>
-          </section>
-
           <section className="glass-panel p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Session Logs</p>
                 <h2 className="mt-3 font-display text-2xl font-bold text-white">Training performance and coach feedback</h2>
               </div>
+              <Link to={`/coach/clients/${clientId}/review`} className="secondary-button">
+                Open full day review
+              </Link>
             </div>
 
             {commentError ? (

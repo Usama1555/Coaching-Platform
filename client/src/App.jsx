@@ -20,8 +20,10 @@ const ClientDashboard = lazy(() => import('./pages/client/ClientDashboard'));
 const TodayWorkout = lazy(() => import('./pages/client/TodayWorkout'));
 const LogSession = lazy(() => import('./pages/client/LogSession'));
 const MyProgress = lazy(() => import('./pages/client/MyProgress'));
+const DailyReview = lazy(() => import('./pages/client/DailyReview'));
 const ClientCheckIn = lazy(() => import('./pages/client/ClientCheckIn'));
 const AIAssistant = lazy(() => import('./pages/client/AIAssistant'));
+const ClientDailyReview = lazy(() => import('./pages/coach/ClientDailyReview'));
 
 function Landing() {
   const { isAuthenticated, user } = useAuth();
@@ -129,6 +131,14 @@ export default function App() {
             }
           />
           <Route
+            path="/coach/clients/:clientId/review"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <ClientDailyReview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/coach/clients/:clientId/assign"
             element={
               <ProtectedRoute allowedRole="coach">
@@ -165,6 +175,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRole="client">
                 <MyProgress />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/client/review/day"
+            element={
+              <ProtectedRoute allowedRole="client">
+                <DailyReview />
               </ProtectedRoute>
             }
           />

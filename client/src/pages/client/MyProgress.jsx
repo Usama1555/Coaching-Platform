@@ -211,6 +211,9 @@ export default function MyProgress() {
             <Link to="/client/check-in" className="primary-button">
               Save check-in
             </Link>
+            <Link to="/client/review/day" className="secondary-button">
+              Review a date
+            </Link>
             <Link to="/client" className="secondary-button">
               Back to dashboard
             </Link>
@@ -375,6 +378,9 @@ export default function MyProgress() {
             <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Sessions</p>
             <h2 className="mt-3 font-display text-2xl font-bold text-white">What your last workouts looked like</h2>
           </div>
+          <Link to="/client/review/day" className="secondary-button">
+            Open full day review
+          </Link>
         </div>
 
         <div className="mt-6 space-y-4">
