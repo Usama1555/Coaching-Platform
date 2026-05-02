@@ -4,7 +4,6 @@ import { getClientMetrics } from '../../api/metrics';
 import { getTodayNutrition } from '../../api/nutrition';
 import { getClientSessions } from '../../api/sessions';
 import { getActiveWorkoutPlan } from '../../api/workouts';
-import { AI_ASSISTANT_ENABLED } from '../../config/features';
 import { useAuth } from '../../hooks/useAuth';
 import { getPlanDayForDate } from '../../utils/planDay';
 
@@ -115,34 +114,13 @@ export default function ClientDashboard() {
     <div className="space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-[2rem] bg-hero p-8 sm:p-10">
         <p className="text-xs uppercase tracking-[0.35em] text-tide">Client Dashboard</p>
-        <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Welcome in, {user.name}.
-            </h1>
-            <p className="mt-4 text-base leading-7 text-slate-200">
-              Your client account is now connected to active plans and session logging, so you can move from assigned training into real logged performance.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/client/workout/today" className="primary-button self-start">
-              View today workout
-            </Link>
-            <Link to="/client/check-in" className="secondary-button self-start">
-              Daily check-in
-            </Link>
-            <Link to="/client/progress" className="secondary-button self-start">
-              Open progress
-            </Link>
-            {AI_ASSISTANT_ENABLED ? (
-              <Link to="/client/ai" className="secondary-button self-start">
-                Ask AI coach
-              </Link>
-            ) : null}
-            <Link to="/login" className="secondary-button self-start">
-              Switch account
-            </Link>
-          </div>
+        <div className="mt-4 max-w-2xl">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Welcome in, {user.name}.
+          </h1>
+          <p className="mt-4 text-base leading-7 text-slate-200">
+            Your client account is now connected to active plans and session logging, so you can move from assigned training into real logged performance.
+          </p>
         </div>
       </section>
 
@@ -183,7 +161,7 @@ export default function ClientDashboard() {
         </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <section>
         <article className="glass-panel p-6 sm:p-8">
           <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Today at a glance</p>
           <div className="mt-5 space-y-4 text-sm leading-6 text-slate-200">
@@ -201,32 +179,6 @@ export default function ClientDashboard() {
               <span className="text-slate-400">Weight check-in:</span> {latestMetric?.weight ? `${latestMetric.weight} kg` : 'Not logged'}
             </p>
           </div>
-        </article>
-
-        <article className="glass-panel p-6 sm:p-8">
-          <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Next actions</p>
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link to="/client/workout/today" className="primary-button">
-              Review today workout
-            </Link>
-            <Link to="/client/workout/log" className="secondary-button">
-              Log session
-            </Link>
-            <Link to="/client/check-in" className="secondary-button">
-              Save check-in
-            </Link>
-            <Link to="/client/progress" className="secondary-button">
-              View progress
-            </Link>
-            {AI_ASSISTANT_ENABLED ? (
-              <Link to="/client/ai" className="secondary-button">
-                Open AI coach
-              </Link>
-            ) : null}
-          </div>
-          <p className="mt-5 text-sm leading-6 text-slate-300">
-            Keep using the same flow after every session so the platform can surface overload opportunities and coach feedback reliably.
-          </p>
         </article>
       </section>
     </div>

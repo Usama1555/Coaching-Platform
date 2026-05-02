@@ -208,14 +208,8 @@ export default function MyProgress() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/client/check-in" className="primary-button">
-              Save check-in
-            </Link>
             <Link to="/client/review/day" className="secondary-button">
               Review a date
-            </Link>
-            <Link to="/client" className="secondary-button">
-              Back to dashboard
             </Link>
           </div>
         </div>
