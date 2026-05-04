@@ -16,6 +16,8 @@ const ClientList = lazy(() => import('./pages/coach/ClientList'));
 const ClientRoster = lazy(() => import('./pages/coach/ClientRoster'));
 const ClientDetail = lazy(() => import('./pages/coach/ClientDetail'));
 const AssignWorkout = lazy(() => import('./pages/coach/AssignWorkout'));
+const WorkoutTemplateLibrary = lazy(() => import('./pages/coach/WorkoutTemplateLibrary'));
+const WorkoutTemplateBuilder = lazy(() => import('./pages/coach/WorkoutTemplateBuilder'));
 const ClientDashboard = lazy(() => import('./pages/client/ClientDashboard'));
 const TodayMealPlan = lazy(() => import('./pages/client/TodayMealPlan'));
 const TodayWorkout = lazy(() => import('./pages/client/TodayWorkout'));
@@ -145,6 +147,30 @@ export default function App() {
             element={
               <ProtectedRoute allowedRole="coach">
                 <AssignWorkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coach/templates/workouts"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <WorkoutTemplateLibrary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coach/templates/workouts/new"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <WorkoutTemplateBuilder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coach/templates/workouts/:templateId/edit"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <WorkoutTemplateBuilder />
               </ProtectedRoute>
             }
           />

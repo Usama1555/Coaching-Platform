@@ -10,6 +10,7 @@ const metricRoutes = require('./routes/metrics');
 const nutritionRoutes = require('./routes/nutrition');
 const ownerRoutes = require('./routes/owner');
 const sessionRoutes = require('./routes/sessions');
+const workoutTemplateRoutes = require('./routes/workoutTemplates');
 const workoutRoutes = require('./routes/workouts');
 const { getAllowedClientOrigins } = require('./utils/clientAppUrl');
 
@@ -45,6 +46,7 @@ app.use('/api/metrics', metricRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/owner', ownerRoutes);
 app.use('/api/sessions', sessionRoutes);
+app.use('/api/workout-templates', workoutTemplateRoutes);
 app.use('/api/workouts', workoutRoutes);
 
 app.use((req, res) => {

@@ -1,104 +1,77 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import DateInput from '../../components/DateInput';
-import { getCoachClientDetail } from '../../api/coaches';
-import { getWorkoutTemplates } from '../../api/workoutTemplates';
-import { createWorkoutPlan } from '../../api/workouts';
+import {
+  createWorkoutTemplate,
+  getWorkoutTemplate,
+  updateWorkoutTemplate,
+} from '../../api/workoutTemplates';
 import {
   buildWorkoutStructure,
   cloneWorkoutDays,
   createExercise,
-  formatDateForInput,
   normalizeNumber,
 } from '../../utils/workoutBuilder';
 
-export default function AssignWorkout() {
+export default function WorkoutTemplateBuilder() {
   const navigate = useNavigate();
-  const { clientId } = useParams();
-  const [client, setClient] = useState(null);
-  const [workoutTemplates, setWorkoutTemplates] = useState([]);
-  const [loadingClient, setLoadingClient] = useState(true);
+  const { templateId } = useParams();
+  const [loadingTemplate, setLoadingTemplate] = useState(Boolean(templateId));
   const [error, setError] = useState('');
   const [submitStatus, setSubmitStatus] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [selectedStructureOption, setSelectedStructureOption] = useState('ULRULRR');
   const [form, setForm] = useState({
     name: '',
-    splitType: 'ULRULRR',
-    templateId: null,
-    weekStartDate: formatDateForInput(),
     days: buildWorkoutStructure('ULRULRR'),
   });
 
   useEffect(() => {
     let mounted = true;
 
-    async function loadClient() {
+    async function loadTemplate() {
+      if (!templateId) {
+        setLoadingTemplate(false);
+        return;
+      }
+
       try {
-        const [clientResponse, templateResponse] = await Promise.all([
-          getCoachClientDetail(clientId),
-          getWorkoutTemplates(),
-        ]);
+        const response = await getWorkoutTemplate(templateId);
 
         if (mounted) {
-          setClient(clientResponse.client);
-          setWorkoutTemplates(templateResponse.templates || []);
-          setForm((current) => ({
-            ...current,
-            name: current.name || `${clientResponse.client.user?.name || 'Client'} - Week Plan`,
-          }));
+          setForm({
+            name: response.template.name || '',
+            days: cloneWorkoutDays(response.template.days),
+          });
+          setSelectedStructureOption('custom');
         }
       } catch (requestError) {
         if (mounted) {
-          setError(requestError.response?.data?.message || 'Unable to load this client.');
+          setError(requestError.response?.data?.message || 'Unable to load this workout template.');
         }
       } finally {
         if (mounted) {
-          setLoadingClient(false);
+          setLoadingTemplate(false);
         }
       }
     }
 
-    loadClient();
+    loadTemplate();
 
     return () => {
       mounted = false;
     };
-  }, [clientId]);
+  }, [templateId]);
 
   function updateTopLevel(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
   }
 
-  function handleSplitTypeChange(event) {
+  function handleStructureChange(event) {
     const { value } = event.target;
-
     setSelectedStructureOption(value);
-
-    if (value.startsWith('template:')) {
-      const selectedTemplate = workoutTemplates.find(
-        (template) => `template:${template._id}` === value
-      );
-
-      if (!selectedTemplate) {
-        return;
-      }
-
-      setForm((current) => ({
-        ...current,
-        splitType: selectedTemplate.name,
-        templateId: selectedTemplate._id,
-        days: cloneWorkoutDays(selectedTemplate.days),
-      }));
-
-      return;
-    }
-
     setForm((current) => ({
       ...current,
-      splitType: value,
-      templateId: null,
       days: buildWorkoutStructure(value),
     }));
   }
@@ -191,12 +164,7 @@ export default function AssignWorkout() {
 
     try {
       const payload = {
-        clientId,
         name: form.name,
-        splitType: form.splitType,
-        templateId: form.templateId,
-        weekStartDate: form.weekStartDate,
-        isActive: true,
         days: form.days.map((day) => ({
           dayNumber: day.dayNumber,
           label: day.label,
@@ -221,12 +189,15 @@ export default function AssignWorkout() {
         })),
       };
 
-      await createWorkoutPlan(payload);
-      navigate(`/coach/clients/${clientId}`, { replace: true });
+      if (templateId) {
+        await updateWorkoutTemplate(templateId, payload);
+      } else {
+        await createWorkoutTemplate(payload);
+      }
+
+      navigate('/coach/templates/workouts', { replace: true });
     } catch (requestError) {
-      setSubmitStatus(
-        requestError.response?.data?.message || 'Unable to create workout plan right now.'
-      );
+      setSubmitStatus(requestError.response?.data?.message || 'Unable to save workout template right now.');
     } finally {
       setSubmitting(false);
     }
@@ -235,22 +206,26 @@ export default function AssignWorkout() {
   return (
     <div className="space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-[2rem] bg-hero p-8 sm:p-10">
-        <p className="text-xs uppercase tracking-[0.35em] text-tide">Assign Workout</p>
+        <p className="text-xs uppercase tracking-[0.35em] text-tide">Workout Template Builder</p>
         <div className="mt-4 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              {loadingClient ? 'Loading client...' : `Plan build for ${client?.user?.name || 'client'}`}
+              {loadingTemplate
+                ? 'Loading template...'
+                : templateId
+                  ? 'Edit workout template'
+                  : 'Create workout template'}
             </h1>
             <p className="mt-4 text-base leading-7 text-slate-200">
-              Build a weekly structure, add exercise targets, and activate the plan in one save. The newest active plan will replace the previous active plan automatically.
+              Save a reusable exercise structure on the coach account, then pull it straight into future client workout plans from the split selector.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/coach/clients/roster" className="secondary-button w-full sm:w-auto">
-              Client roster
+            <Link to="/coach/templates/workouts" className="secondary-button w-full sm:w-auto">
+              Template library
             </Link>
-            <Link to={`/coach/clients/${clientId}`} className="secondary-button w-full sm:w-auto">
-              Client detail
+            <Link to="/profile" className="secondary-button w-full sm:w-auto">
+              Profile
             </Link>
           </div>
         </div>
@@ -265,10 +240,10 @@ export default function AssignWorkout() {
       {!error ? (
         <form onSubmit={handleSubmit} className="space-y-8">
           <section className="glass-panel p-6 sm:p-8">
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid gap-4 lg:grid-cols-2">
               <div>
                 <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-200">
-                  Plan name
+                  Template name
                 </label>
                 <input
                   id="name"
@@ -276,49 +251,25 @@ export default function AssignWorkout() {
                   value={form.name}
                   onChange={updateTopLevel}
                   className="input-shell"
-                  placeholder="Week 3 - Upper/Lower"
+                  placeholder="Upper / Lower Template"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="splitType" className="mb-2 block text-sm font-medium text-slate-200">
-                  Split type
+                <label htmlFor="structureType" className="mb-2 block text-sm font-medium text-slate-200">
+                  Starting structure
                 </label>
                 <select
-                  id="splitType"
-                  name="splitType"
+                  id="structureType"
                   value={selectedStructureOption}
-                  onChange={handleSplitTypeChange}
+                  onChange={handleStructureChange}
                   className="input-shell"
                 >
                   <option value="ULRULRR">ULRULRR</option>
                   <option value="PPlRUL">PPlRUL</option>
                   <option value="custom">Custom</option>
-                  {workoutTemplates.length ? (
-                    <optgroup label="Saved templates">
-                      {workoutTemplates.map((template) => (
-                        <option key={template._id} value={`template:${template._id}`}>
-                          {template.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ) : null}
                 </select>
-              </div>
-
-              <div>
-                <label htmlFor="weekStartDate" className="mb-2 block text-sm font-medium text-slate-200">
-                  Week start date
-                </label>
-                <DateInput
-                  id="weekStartDate"
-                  name="weekStartDate"
-                  value={form.weekStartDate}
-                  onChange={updateTopLevel}
-                  className="input-shell"
-                  required
-                />
               </div>
             </div>
           </section>
@@ -367,14 +318,10 @@ export default function AssignWorkout() {
 
                             <div className="mt-4 grid gap-4 lg:grid-cols-2">
                               <div>
-                                <label
-                                  htmlFor={`exercise-name-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
+                                <label className="mb-2 block text-sm font-medium text-slate-200">
                                   Exercise name
                                 </label>
                                 <input
-                                  id={`exercise-name-${day.dayNumber}-${exerciseIndex}`}
                                   value={exercise.name}
                                   onChange={(event) =>
                                     updateExercise(dayIndex, exerciseIndex, 'name', event.target.value)
@@ -384,14 +331,10 @@ export default function AssignWorkout() {
                                 />
                               </div>
                               <div>
-                                <label
-                                  htmlFor={`exercise-muscle-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
+                                <label className="mb-2 block text-sm font-medium text-slate-200">
                                   Muscle group
                                 </label>
                                 <input
-                                  id={`exercise-muscle-${day.dayNumber}-${exerciseIndex}`}
                                   value={exercise.muscleGroup}
                                   onChange={(event) =>
                                     updateExercise(dayIndex, exerciseIndex, 'muscleGroup', event.target.value)
@@ -403,83 +346,27 @@ export default function AssignWorkout() {
                             </div>
 
                             <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                              <div>
-                                <label
-                                  htmlFor={`exercise-sets-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
-                                  Target sets
-                                </label>
-                                <input
-                                  id={`exercise-sets-${day.dayNumber}-${exerciseIndex}`}
-                                  type="number"
-                                  min="1"
-                                  value={exercise.targetSets}
-                                  onChange={(event) =>
-                                    updateExercise(dayIndex, exerciseIndex, 'targetSets', event.target.value)
-                                  }
-                                  className="input-shell"
-                                  placeholder="2"
-                                />
-                              </div>
-                              <div>
-                                <label
-                                  htmlFor={`exercise-reps-min-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
-                                  Min reps
-                                </label>
-                                <input
-                                  id={`exercise-reps-min-${day.dayNumber}-${exerciseIndex}`}
-                                  type="number"
-                                  min="1"
-                                  value={exercise.targetRepsMin}
-                                  onChange={(event) =>
-                                    updateExercise(dayIndex, exerciseIndex, 'targetRepsMin', event.target.value)
-                                  }
-                                  className="input-shell"
-                                  placeholder="5"
-                                />
-                              </div>
-                              <div>
-                                <label
-                                  htmlFor={`exercise-reps-max-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
-                                  Max reps
-                                </label>
-                                <input
-                                  id={`exercise-reps-max-${day.dayNumber}-${exerciseIndex}`}
-                                  type="number"
-                                  min="1"
-                                  value={exercise.targetRepsMax}
-                                  onChange={(event) =>
-                                    updateExercise(dayIndex, exerciseIndex, 'targetRepsMax', event.target.value)
-                                  }
-                                  className="input-shell"
-                                  placeholder="8"
-                                />
-                              </div>
-                              <div>
-                                <label
-                                  htmlFor={`exercise-weight-${day.dayNumber}-${exerciseIndex}`}
-                                  className="mb-2 block text-sm font-medium text-slate-200"
-                                >
-                                  Starting weight (kg)
-                                </label>
-                                <input
-                                  id={`exercise-weight-${day.dayNumber}-${exerciseIndex}`}
-                                  type="number"
-                                  min="0"
-                                  step="0.5"
-                                  value={exercise.targetWeight}
-                                  onChange={(event) =>
-                                    updateExercise(dayIndex, exerciseIndex, 'targetWeight', event.target.value)
-                                  }
-                                  className="input-shell"
-                                  placeholder="0"
-                                />
-                              </div>
+                              {[
+                                ['targetSets', 'Target sets', '2'],
+                                ['targetRepsMin', 'Min reps', '5'],
+                                ['targetRepsMax', 'Max reps', '8'],
+                                ['targetWeight', 'Starting weight (kg)', '0'],
+                              ].map(([field, label, placeholder]) => (
+                                <div key={field}>
+                                  <label className="mb-2 block text-sm font-medium text-slate-200">{label}</label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step={field === 'targetWeight' ? '0.5' : '1'}
+                                    value={exercise[field]}
+                                    onChange={(event) =>
+                                      updateExercise(dayIndex, exerciseIndex, field, event.target.value)
+                                    }
+                                    className="input-shell"
+                                    placeholder={placeholder}
+                                  />
+                                </div>
+                              ))}
                             </div>
 
                             <textarea
@@ -508,14 +395,8 @@ export default function AssignWorkout() {
                       <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Cardio Protocol</p>
                       <div className="mt-4 grid gap-4 lg:grid-cols-4">
                         <div>
-                          <label
-                            htmlFor={`cardio-type-${day.dayNumber}`}
-                            className="mb-2 block text-sm font-medium text-slate-200"
-                          >
-                            Cardio type
-                          </label>
+                          <label className="mb-2 block text-sm font-medium text-slate-200">Cardio type</label>
                           <input
-                            id={`cardio-type-${day.dayNumber}`}
                             value={day.cardio.type}
                             onChange={(event) => updateCardio(dayIndex, 'type', event.target.value)}
                             className="input-shell"
@@ -523,14 +404,8 @@ export default function AssignWorkout() {
                           />
                         </div>
                         <div>
-                          <label
-                            htmlFor={`cardio-duration-${day.dayNumber}`}
-                            className="mb-2 block text-sm font-medium text-slate-200"
-                          >
-                            Duration (mins)
-                          </label>
+                          <label className="mb-2 block text-sm font-medium text-slate-200">Duration (mins)</label>
                           <input
-                            id={`cardio-duration-${day.dayNumber}`}
                             type="number"
                             min="0"
                             value={day.cardio.durationMins}
@@ -540,14 +415,8 @@ export default function AssignWorkout() {
                           />
                         </div>
                         <div>
-                          <label
-                            htmlFor={`cardio-speed-${day.dayNumber}`}
-                            className="mb-2 block text-sm font-medium text-slate-200"
-                          >
-                            Speed
-                          </label>
+                          <label className="mb-2 block text-sm font-medium text-slate-200">Speed</label>
                           <input
-                            id={`cardio-speed-${day.dayNumber}`}
                             type="number"
                             min="0"
                             step="0.1"
@@ -558,14 +427,8 @@ export default function AssignWorkout() {
                           />
                         </div>
                         <div>
-                          <label
-                            htmlFor={`cardio-incline-${day.dayNumber}`}
-                            className="mb-2 block text-sm font-medium text-slate-200"
-                          >
-                            Incline
-                          </label>
+                          <label className="mb-2 block text-sm font-medium text-slate-200">Incline</label>
                           <input
-                            id={`cardio-incline-${day.dayNumber}`}
                             type="number"
                             min="0"
                             step="0.1"
@@ -599,9 +462,13 @@ export default function AssignWorkout() {
               disabled={submitting}
               className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
-              {submitting ? 'Saving plan...' : 'Save and activate workout plan'}
+              {submitting
+                ? 'Saving template...'
+                : templateId
+                  ? 'Save template changes'
+                  : 'Save workout template'}
             </button>
-            <Link to={`/coach/clients/${clientId}`} className="secondary-button w-full sm:w-auto">
+            <Link to="/coach/templates/workouts" className="secondary-button w-full sm:w-auto">
               Cancel
             </Link>
           </div>

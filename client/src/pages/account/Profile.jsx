@@ -127,6 +127,11 @@ export default function Profile() {
           <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm leading-6 text-slate-300">
             Email stays fixed here. Name and password can be updated safely from this page whenever needed.
           </div>
+          {user.role === 'coach' ? (
+            <Link to="/coach/templates/workouts" className="secondary-button mt-4 w-full sm:w-auto">
+              Workout templates
+            </Link>
+          ) : null}
         </article>
 
         <article className="glass-panel p-6 sm:p-8">

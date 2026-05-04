@@ -6,7 +6,7 @@ const { ensureCoachProfile } = require('../utils/profileHelpers');
 exports.createWorkoutPlan = async (req, res) => {
   try {
     const coach = await ensureCoachProfile(req.user.id);
-    const { clientId, name, splitType, weekStartDate, days, isActive = true } = req.body;
+    const { clientId, name, splitType, templateId = null, weekStartDate, days, isActive = true } = req.body;
 
     if (!clientId || !name || !weekStartDate || !Array.isArray(days) || days.length === 0) {
       return res.status(400).json({
@@ -32,6 +32,7 @@ exports.createWorkoutPlan = async (req, res) => {
       clientId: client._id,
       name,
       splitType,
+      templateId,
       weekStartDate,
       days,
       isActive,
@@ -106,7 +107,7 @@ exports.updateWorkoutPlan = async (req, res) => {
       return res.status(404).json({ message: 'Workout plan not found' });
     }
 
-    const allowedFields = ['name', 'splitType', 'weekStartDate', 'days', 'isActive'];
+    const allowedFields = ['name', 'splitType', 'templateId', 'weekStartDate', 'days', 'isActive'];
 
     allowedFields.forEach((field) => {
       if (req.body[field] !== undefined) {

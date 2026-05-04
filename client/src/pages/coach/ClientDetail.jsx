@@ -156,8 +156,8 @@ export default function ClientDetail() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/coach/clients" className="secondary-button">
-              Back to clients
+            <Link to="/coach/clients/roster" className="secondary-button">
+              Back to roster
             </Link>
             <Link to={`/coach/clients/${clientId}/mealplan/build`} className="secondary-button">
               Build meal plan

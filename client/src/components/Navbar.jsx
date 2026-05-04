@@ -18,10 +18,10 @@ export default function Navbar() {
 
   const navigationLinks = useMemo(() => {
     if (!isAuthenticated || !user) {
-      return [{ to: '/login', label: 'Log in' }];
+      return [{ to: '/login', label: 'Log in', end: true }];
     }
 
-    const links = [{ to: dashboardRoute, label: 'Dashboard' }];
+    const links = [{ to: dashboardRoute, label: 'Dashboard', end: true }];
 
     if (canAccessCoachApp) {
       links.push({ to: '/coach/clients', label: 'Clients' });
@@ -80,7 +80,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               {navigationLinks.map((link) => (
-                <NavLink key={link.to} to={link.to} className={getDesktopLinkClass}>
+                <NavLink key={link.to} to={link.to} end={link.end} className={getDesktopLinkClass}>
                   {link.label}
                 </NavLink>
               ))}
@@ -121,7 +121,7 @@ export default function Navbar() {
           <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
             <div className="flex flex-col gap-2">
               {navigationLinks.map((link) => (
-                <NavLink key={link.to} to={link.to} className={getMobileLinkClass}>
+                <NavLink key={link.to} to={link.to} end={link.end} className={getMobileLinkClass}>
                   {link.label}
                 </NavLink>
               ))}
