@@ -103,10 +103,10 @@ export default function LogSession() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/client/workout/today" className="secondary-button">
+            <Link to="/client/workout/today" className="secondary-button w-full sm:w-auto">
               View workout
             </Link>
-            <Link to="/client" className="secondary-button">
+            <Link to="/client" className="secondary-button w-full sm:w-auto">
               Back to dashboard
             </Link>
           </div>
@@ -149,4 +149,3 @@ export default function LogSession() {
     </div>
   );
 }
-

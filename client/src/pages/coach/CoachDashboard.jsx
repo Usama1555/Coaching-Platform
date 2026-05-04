@@ -142,7 +142,7 @@ export default function CoachDashboard() {
     .slice(0, 4);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-[2rem] bg-hero p-8 sm:p-10">
         <p className="text-xs uppercase tracking-[0.35em] text-tide">Coach Control Center</p>
         <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -183,7 +183,7 @@ export default function CoachDashboard() {
           <div className="mt-6 grid gap-4">
             {clientAttentionBoard.map((item) => (
               <div key={item.label} className={`rounded-3xl border p-5 ${item.className}`}>
-                <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm uppercase tracking-[0.25em]">{item.label}</p>
                   <p className="font-display text-3xl font-bold">{item.value}</p>
                 </div>

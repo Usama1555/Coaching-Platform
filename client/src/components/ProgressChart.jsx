@@ -18,7 +18,7 @@ export default function ProgressChart({
   height = 280,
 }) {
   return (
-    <article className="glass-panel p-6 sm:p-8">
+    <article className="glass-panel overflow-hidden p-6 sm:p-8">
       <div className="flex flex-col gap-3">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-slate-400">{title}</p>
@@ -29,12 +29,12 @@ export default function ProgressChart({
       </div>
 
       {data?.length ? (
-        <div className="mt-6" style={{ height }}>
+        <div className="mt-6 overflow-hidden" style={{ height }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+            <LineChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
               <CartesianGrid strokeDasharray="4 4" stroke="rgba(148, 163, 184, 0.18)" />
-              <XAxis dataKey="label" stroke="#94a3b8" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
-              <YAxis stroke="#94a3b8" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+              <XAxis dataKey="label" stroke="#94a3b8" tick={{ fill: '#cbd5e1', fontSize: 12 }} minTickGap={18} />
+              <YAxis stroke="#94a3b8" tick={{ fill: '#cbd5e1', fontSize: 12 }} width={42} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#0f172a',
@@ -44,7 +44,7 @@ export default function ProgressChart({
                 }}
                 labelStyle={{ color: '#f8fafc' }}
               />
-              <Legend wrapperStyle={{ color: '#cbd5e1' }} />
+              <Legend wrapperStyle={{ color: '#cbd5e1', fontSize: '12px', paddingTop: '12px' }} />
               {lines.map((line) => (
                 <Line
                   key={line.key}
@@ -68,4 +68,3 @@ export default function ProgressChart({
     </article>
   );
 }
-

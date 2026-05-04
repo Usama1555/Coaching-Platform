@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import DateInput from '../../components/DateInput';
 import { getClientMetrics, saveBodyMetric } from '../../api/metrics';
 import { getClientNutritionHistory, getTodayNutrition, saveNutritionLog } from '../../api/nutrition';
 import { useAuth } from '../../hooks/useAuth';
@@ -225,10 +226,10 @@ export default function ClientCheckIn() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/client/progress" className="secondary-button">
+            <Link to="/client/progress" className="secondary-button w-full sm:w-auto">
               View progress
             </Link>
-            <Link to="/client" className="secondary-button">
+            <Link to="/client" className="secondary-button w-full sm:w-auto">
               Back to dashboard
             </Link>
           </div>
@@ -280,7 +281,7 @@ export default function ClientCheckIn() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-200">Date</label>
-                <input type="date" name="date" value={nutritionForm.date} onChange={updateNutrition} className="input-shell" />
+                <DateInput name="date" value={nutritionForm.date} onChange={updateNutrition} className="input-shell" />
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-200">Water litres</label>
@@ -338,7 +339,7 @@ export default function ClientCheckIn() {
             <button
               type="submit"
               disabled={submittingNutrition}
-              className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
               {submittingNutrition ? 'Saving nutrition...' : 'Save nutrition log'}
             </button>
@@ -352,7 +353,7 @@ export default function ClientCheckIn() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-200">Date</label>
-                <input type="date" name="date" value={metricForm.date} onChange={updateMetric} className="input-shell" />
+                <DateInput name="date" value={metricForm.date} onChange={updateMetric} className="input-shell" />
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-200">Weight (kg)</label>
@@ -414,7 +415,7 @@ export default function ClientCheckIn() {
             <button
               type="submit"
               disabled={submittingMetric}
-              className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
               {submittingMetric ? 'Saving check-in...' : 'Save body metric'}
             </button>

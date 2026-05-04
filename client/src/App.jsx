@@ -17,6 +17,7 @@ const ClientRoster = lazy(() => import('./pages/coach/ClientRoster'));
 const ClientDetail = lazy(() => import('./pages/coach/ClientDetail'));
 const AssignWorkout = lazy(() => import('./pages/coach/AssignWorkout'));
 const ClientDashboard = lazy(() => import('./pages/client/ClientDashboard'));
+const TodayMealPlan = lazy(() => import('./pages/client/TodayMealPlan'));
 const TodayWorkout = lazy(() => import('./pages/client/TodayWorkout'));
 const LogSession = lazy(() => import('./pages/client/LogSession'));
 const MyProgress = lazy(() => import('./pages/client/MyProgress'));
@@ -24,6 +25,7 @@ const DailyReview = lazy(() => import('./pages/client/DailyReview'));
 const ClientCheckIn = lazy(() => import('./pages/client/ClientCheckIn'));
 const AIAssistant = lazy(() => import('./pages/client/AIAssistant'));
 const ClientDailyReview = lazy(() => import('./pages/coach/ClientDailyReview'));
+const MealPlanBuilder = lazy(() => import('./pages/coach/MealPlanBuilder'));
 
 function Landing() {
   const { isAuthenticated, user } = useAuth();
@@ -37,9 +39,9 @@ function Landing() {
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       <Navbar />
-      <main className="mx-auto max-w-7xl">{children}</main>
+      <main className="mx-auto w-full max-w-7xl">{children}</main>
     </div>
   );
 }
@@ -147,6 +149,22 @@ export default function App() {
             }
           />
           <Route
+            path="/coach/clients/:clientId/mealplan/build"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <MealPlanBuilder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/coach/clients/:clientId/mealplan/:planId/edit"
+            element={
+              <ProtectedRoute allowedRole="coach">
+                <MealPlanBuilder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/client"
             element={
               <ProtectedRoute allowedRole="client">
@@ -159,6 +177,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRole="client">
                 <TodayWorkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/client/mealplan"
+            element={
+              <ProtectedRoute allowedRole="client">
+                <TodayMealPlan />
               </ProtectedRoute>
             }
           />

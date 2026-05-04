@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import DateInput from '../../components/DateInput';
 import { getCoachClientDetail } from '../../api/coaches';
 import { createWorkoutPlan } from '../../api/workouts';
 
@@ -268,10 +269,10 @@ export default function AssignWorkout() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/coach/clients" className="secondary-button">
+            <Link to="/coach/clients" className="secondary-button w-full sm:w-auto">
               Client roster
             </Link>
-            <Link to={`/coach/clients/${clientId}`} className="secondary-button">
+            <Link to={`/coach/clients/${clientId}`} className="secondary-button w-full sm:w-auto">
               Client detail
             </Link>
           </div>
@@ -324,10 +325,9 @@ export default function AssignWorkout() {
                 <label htmlFor="weekStartDate" className="mb-2 block text-sm font-medium text-slate-200">
                   Week start date
                 </label>
-                <input
+                <DateInput
                   id="weekStartDate"
                   name="weekStartDate"
-                  type="date"
                   value={form.weekStartDate}
                   onChange={updateTopLevel}
                   className="input-shell"
@@ -366,7 +366,7 @@ export default function AssignWorkout() {
                       {day.exercises.length ? (
                         day.exercises.map((exercise, exerciseIndex) => (
                           <div key={`${day.dayNumber}-${exerciseIndex}`} className="rounded-3xl border border-white/10 bg-white/5 p-5">
-                            <div className="flex items-center justify-between gap-4">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                               <p className="font-display text-lg font-semibold text-white">
                                 Exercise {exerciseIndex + 1}
                               </p>
@@ -611,11 +611,11 @@ export default function AssignWorkout() {
             <button
               type="submit"
               disabled={submitting}
-              className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
               {submitting ? 'Saving plan...' : 'Save and activate workout plan'}
             </button>
-            <Link to={`/coach/clients/${clientId}`} className="secondary-button">
+            <Link to={`/coach/clients/${clientId}`} className="secondary-button w-full sm:w-auto">
               Cancel
             </Link>
           </div>

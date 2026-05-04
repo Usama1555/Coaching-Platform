@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getCoachClientDetail } from '../../api/coaches';
+import { deleteMealPlan } from '../../api/mealplans';
 import { addSessionComment, getClientSessions } from '../../api/sessions';
 import CommentBox from '../../components/CommentBox';
 
@@ -42,6 +43,8 @@ export default function ClientDetail() {
   const [error, setError] = useState('');
   const [savingCommentId, setSavingCommentId] = useState('');
   const [commentError, setCommentError] = useState('');
+  const [deletingMealPlanId, setDeletingMealPlanId] = useState('');
+  const [mealPlanStatus, setMealPlanStatus] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -76,6 +79,8 @@ export default function ClientDetail() {
   }, [clientId]);
 
   const client = payload?.client;
+  const activeMealPlan = payload?.activeMealPlan || null;
+  const recentMealPlans = payload?.recentMealPlans || [];
   const latestMetric = payload?.latestMetric || null;
   const latestNutrition = payload?.latestNutrition || null;
 
@@ -103,6 +108,40 @@ export default function ClientDetail() {
     }
   }
 
+  async function handleDeleteMealPlan(planId, planName) {
+    const shouldDelete = window.confirm(`Delete ${planName || 'this meal plan'}?`);
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setDeletingMealPlanId(planId);
+    setMealPlanStatus('');
+
+    try {
+      await deleteMealPlan(planId);
+      setPayload((current) => {
+        if (!current) {
+          return current;
+        }
+
+        return {
+          ...current,
+          activeMealPlan:
+            current.activeMealPlan && current.activeMealPlan._id === planId
+              ? null
+              : current.activeMealPlan,
+          recentMealPlans: (current.recentMealPlans || []).filter((plan) => plan._id !== planId),
+        };
+      });
+      setMealPlanStatus('Meal plan deleted successfully.');
+    } catch (requestError) {
+      setMealPlanStatus(requestError.response?.data?.message || 'Unable to delete that meal plan.');
+    } finally {
+      setDeletingMealPlanId('');
+    }
+  }
+
   return (
     <div className="space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       <section className="overflow-hidden rounded-[2rem] bg-hero p-8 sm:p-10">
@@ -119,6 +158,9 @@ export default function ClientDetail() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link to="/coach/clients" className="secondary-button">
               Back to clients
+            </Link>
+            <Link to={`/coach/clients/${clientId}/mealplan/build`} className="secondary-button">
+              Build meal plan
             </Link>
             <Link to={`/coach/clients/${clientId}/review`} className="secondary-button">
               Review by date
@@ -154,7 +196,7 @@ export default function ClientDetail() {
             ))}
           </section>
 
-          <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+          <section className="grid gap-6 xl:grid-cols-2">
             <article className="glass-panel p-6 sm:p-8">
               <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Profile Snapshot</p>
               <div className="mt-5 space-y-4 text-sm leading-6 text-slate-200">
@@ -181,7 +223,7 @@ export default function ClientDetail() {
             </article>
 
             <article className="glass-panel p-6 sm:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Current Active Plan</p>
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Current Active Workout Plan</p>
               {client.activePlan ? (
                 <div className="mt-5 rounded-3xl border border-white/10 bg-white/5 p-5">
                   <p className="font-display text-2xl font-bold text-white">{client.activePlan.name}</p>
@@ -197,6 +239,61 @@ export default function ClientDetail() {
                   This client does not have an active workout plan yet.
                 </div>
               )}
+            </article>
+          </section>
+
+          <section>
+            <article className="glass-panel p-6 sm:p-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Current Active Meal Plan</p>
+                  <h2 className="mt-3 font-display text-2xl font-bold text-white">Nutrition blueprint</h2>
+                </div>
+                <Link to={`/coach/clients/${clientId}/mealplan/build`} className="secondary-button self-start">
+                  Build another
+                </Link>
+              </div>
+
+              {activeMealPlan ? (
+                <div className="mt-5 rounded-3xl border border-white/10 bg-white/5 p-5 text-sm leading-6 text-slate-200">
+                  <p className="font-display text-2xl font-bold text-white">{activeMealPlan.name}</p>
+                  <p className="mt-3 text-slate-300">Week starts: {formatDate(activeMealPlan.weekStartDate)}</p>
+                  <p className="mt-2 text-slate-300">
+                    {activeMealPlan.dailyCalorieTarget} kcal | {activeMealPlan.dailyProteinTarget} g protein | {activeMealPlan.meals?.length || 0} meals
+                  </p>
+                  {activeMealPlan.notes ? (
+                    <p className="mt-4 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3 text-slate-200">
+                      {activeMealPlan.notes}
+                    </p>
+                  ) : null}
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <Link
+                      to={`/coach/clients/${clientId}/mealplan/${activeMealPlan._id}/edit`}
+                      className="secondary-button w-full sm:w-auto"
+                    >
+                      Edit meal plan
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteMealPlan(activeMealPlan._id, activeMealPlan.name)}
+                      disabled={deletingMealPlanId === activeMealPlan._id}
+                      className="secondary-button w-full border-red-400/30 !text-red-100 hover:!bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                    >
+                      {deletingMealPlanId === activeMealPlan._id ? 'Deleting...' : 'Delete meal plan'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-3xl border border-dashed border-white/15 bg-white/[0.03] p-5 text-sm text-slate-300">
+                  This client does not have an active meal plan yet.
+                </div>
+              )}
+
+              {mealPlanStatus ? (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
+                  {mealPlanStatus}
+                </div>
+              ) : null}
             </article>
           </section>
 
@@ -273,12 +370,12 @@ export default function ClientDetail() {
           </section>
 
           <section className="glass-panel p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Session Logs</p>
                 <h2 className="mt-3 font-display text-2xl font-bold text-white">Training performance and coach feedback</h2>
               </div>
-              <Link to={`/coach/clients/${clientId}/review`} className="secondary-button">
+              <Link to={`/coach/clients/${clientId}/review`} className="secondary-button self-start">
                 Open full day review
               </Link>
             </div>

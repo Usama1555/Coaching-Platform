@@ -287,13 +287,13 @@ export default function ClientRoster() {
                   </div>
 
                   <div className="flex flex-col gap-3 sm:flex-row xl:items-center">
-                    <Link to={`/coach/clients/${client.id}`} className="secondary-button">
+                    <Link to={`/coach/clients/${client.id}`} className="secondary-button w-full sm:w-auto">
                       View details
                     </Link>
                     <button
                       type="button"
                       onClick={() => toggleManage(client.id)}
-                      className="secondary-button"
+                      className="secondary-button w-full sm:w-auto"
                     >
                       {isManaging ? 'Close manage' : 'Manage account'}
                     </button>

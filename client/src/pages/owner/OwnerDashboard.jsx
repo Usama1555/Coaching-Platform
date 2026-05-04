@@ -151,7 +151,7 @@ export default function OwnerDashboard() {
                       type="button"
                       onClick={() => handleApprovalUpdate(coach.id, 'approved')}
                       disabled={updatingCoachId === coach.id}
-                      className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+                      className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                     >
                       {updatingCoachId === coach.id ? 'Saving...' : 'Approve'}
                     </button>
@@ -159,7 +159,7 @@ export default function OwnerDashboard() {
                       type="button"
                       onClick={() => handleApprovalUpdate(coach.id, 'pending')}
                       disabled={updatingCoachId === coach.id}
-                      className="secondary-button disabled:cursor-not-allowed disabled:opacity-70"
+                      className="secondary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                     >
                       Mark pending
                     </button>
@@ -167,7 +167,7 @@ export default function OwnerDashboard() {
                       type="button"
                       onClick={() => handleApprovalUpdate(coach.id, 'rejected')}
                       disabled={updatingCoachId === coach.id}
-                      className="secondary-button !border-red-400/30 !bg-red-500/10 !text-red-100 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="secondary-button w-full !border-red-400/30 !bg-red-500/10 !text-red-100 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                     >
                       Reject
                     </button>

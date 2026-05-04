@@ -363,8 +363,8 @@ export default function ClientList() {
                       <p className="mt-4 text-sm leading-7 text-slate-200">{client.statusReason}</p>
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between gap-3">
-                      <Link to={`/coach/clients/${client.id}`} className="secondary-button px-4 py-2">
+                    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <Link to={`/coach/clients/${client.id}`} className="secondary-button w-full px-4 py-2 sm:w-auto">
                         View details
                       </Link>
                       <div className="text-xs uppercase tracking-[0.22em] text-slate-400">

@@ -92,7 +92,7 @@ export default function ExerciseLogger({ exercises, onSubmit, submitting }) {
               <p className="font-display text-2xl font-bold text-white">{exercise.name}</p>
               <p className="mt-2 text-sm text-slate-300">{exercise.muscleGroup || 'Muscle group not set'}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-200">
+            <div className="w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-slate-200 lg:w-auto">
               Target: {exercise.targetSets} sets of {exercise.targetRepsMin}-{exercise.targetRepsMax} reps at{' '}
               {exercise.targetWeight} kg
             </div>
@@ -107,7 +107,7 @@ export default function ExerciseLogger({ exercises, onSubmit, submitting }) {
           <div className="mt-5 space-y-4">
             {exercise.sets.map((set, setIndex) => (
               <div key={`${exercise.name}-${setIndex + 1}`} className="rounded-3xl border border-white/10 bg-slate-950/30 p-4">
-                <div className="grid gap-4 lg:grid-cols-[120px_1fr_1fr_auto] lg:items-end">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[120px_1fr_1fr_auto] xl:items-end">
                   <div>
                     <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Set {setIndex + 1}</p>
                   </div>
@@ -137,7 +137,7 @@ export default function ExerciseLogger({ exercises, onSubmit, submitting }) {
                     />
                   </div>
 
-                  <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
+                  <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 sm:justify-start">
                     <input
                       type="checkbox"
                       checked={set.hitFailure}
@@ -196,7 +196,7 @@ export default function ExerciseLogger({ exercises, onSubmit, submitting }) {
         <button
           type="submit"
           disabled={submitting}
-          className="primary-button mt-6 disabled:cursor-not-allowed disabled:opacity-70"
+          className="primary-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
         >
           {submitting ? 'Submitting session...' : 'Submit session'}
         </button>

@@ -99,7 +99,7 @@ export default function Profile() {
               Update your display name and password here. This page works for both coaches and clients.
             </p>
           </div>
-          <Link to={getDashboardRoute(user)} className="secondary-button">
+          <Link to={getDashboardRoute(user)} className="secondary-button self-start">
             Back to dashboard
           </Link>
         </div>
@@ -164,7 +164,7 @@ export default function Profile() {
             <button
               type="submit"
               disabled={savingProfile}
-              className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
               {savingProfile ? 'Saving...' : 'Save name'}
             </button>
@@ -243,7 +243,7 @@ export default function Profile() {
             <button
               type="submit"
               disabled={savingPassword}
-              className="primary-button disabled:cursor-not-allowed disabled:opacity-70"
+              className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
             >
               {savingPassword ? 'Updating...' : 'Update password'}
             </button>

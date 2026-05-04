@@ -1,4 +1,5 @@
 import CommentBox from './CommentBox';
+import DateInput from './DateInput';
 
 export function getDateValue(value) {
   if (!value) {
@@ -49,7 +50,7 @@ function getCardioLabel(session) {
 function MetricPill({ label, value }) {
   return (
     <div className="h-full min-w-0 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3 text-sm text-slate-200">
-      <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">{label}</p>
+      <p className="text-[11px] uppercase tracking-[0.12em] text-slate-400 sm:tracking-[0.16em]">{label}</p>
       <p className="mt-2 font-medium leading-tight text-white">{value}</p>
     </div>
   );
@@ -92,9 +93,8 @@ export default function DailyTrainingReview({
             <label htmlFor="daily-review-date" className="mb-2 block text-sm font-medium text-slate-200">
               Select date
             </label>
-            <input
+            <DateInput
               id="daily-review-date"
-              type="date"
               value={selectedDate}
               onChange={(event) => onDateChange(event.target.value)}
               className="input-shell"
@@ -125,7 +125,9 @@ export default function DailyTrainingReview({
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Workout</p>
-                  <h3 className="mt-3 font-display text-2xl font-bold text-white">Training on {selectedDate}</h3>
+                  <h3 className="mt-3 break-words font-display text-xl font-bold text-white sm:text-2xl">
+                    Training on {selectedDate}
+                  </h3>
                 </div>
               </div>
 
@@ -250,8 +252,8 @@ export default function DailyTrainingReview({
                                     key={`${food.name}-${foodIndex}`}
                                     className="rounded-xl border border-white/10 bg-slate-950/30 px-3 py-2"
                                   >
-                                    <p className="font-medium text-white">{food.name}</p>
-                                    <p className="mt-1 text-slate-300">
+                                    <p className="break-words font-medium text-white">{food.name}</p>
+                                    <p className="mt-1 break-words text-slate-300">
                                       {food.weightGrams || 0}g | {food.calories || 0} kcal | {food.protein || 0}p / {food.carbs || 0}c / {food.fat || 0}f
                                     </p>
                                   </div>
@@ -281,7 +283,9 @@ export default function DailyTrainingReview({
           <section className="glass-panel p-6 sm:p-8">
             <div>
               <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Check-In</p>
-              <h3 className="mt-3 font-display text-2xl font-bold text-white">Recovery and body metrics on {selectedDate}</h3>
+              <h3 className="mt-3 break-words font-display text-xl font-bold text-white sm:text-2xl">
+                Recovery and body metrics on {selectedDate}
+              </h3>
             </div>
 
             <div className="mt-6">

@@ -66,11 +66,11 @@ export default function TodayWorkout() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/client" className="secondary-button">
+            <Link to="/client" className="secondary-button w-full sm:w-auto">
               Back to dashboard
             </Link>
             {todayDay && !todayDay.isRest ? (
-              <Link to="/client/workout/log" className="primary-button">
+              <Link to="/client/workout/log" className="primary-button w-full sm:w-auto">
                 Start logging
               </Link>
             ) : null}
@@ -152,4 +152,3 @@ export default function TodayWorkout() {
     </div>
   );
 }
-

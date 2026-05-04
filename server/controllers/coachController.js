@@ -3,6 +3,7 @@ const AIConversation = require('../models/AIConversation');
 const BodyMetric = require('../models/BodyMetric');
 const Coach = require('../models/Coach');
 const Client = require('../models/Client');
+const MealPlan = require('../models/MealPlan');
 const NutritionLog = require('../models/NutritionLog');
 const SessionLog = require('../models/SessionLog');
 const User = require('../models/User');
@@ -322,13 +323,24 @@ exports.getClientDetail = async (req, res) => {
       return res.status(404).json({ message: 'Client not found' });
     }
 
-    const [activePlan, plans, latestMetric, recentMetrics, latestNutrition, recentNutritionLogs] = await Promise.all([
+    const [activePlan, plans, activeMealPlan, recentMealPlans, latestMetric, recentMetrics, latestNutrition, recentNutritionLogs] = await Promise.all([
       WorkoutPlan.findOne({
         coachId: coach._id,
         clientId: client._id,
         isActive: true,
       }).sort({ createdAt: -1 }),
       WorkoutPlan.find({
+        coachId: coach._id,
+        clientId: client._id,
+      })
+        .sort({ createdAt: -1 })
+        .limit(5),
+      MealPlan.findOne({
+        coachId: coach._id,
+        clientId: client._id,
+        isActive: true,
+      }).sort({ createdAt: -1 }),
+      MealPlan.find({
         coachId: coach._id,
         clientId: client._id,
       })
@@ -343,6 +355,8 @@ exports.getClientDetail = async (req, res) => {
     return res.status(200).json({
       client: serializeClient(client, activePlan),
       plans,
+      activeMealPlan,
+      recentMealPlans,
       latestMetric,
       recentMetrics,
       latestNutrition,
@@ -405,6 +419,7 @@ exports.deleteClient = async (req, res) => {
       Coach.findByIdAndUpdate(coach._id, {
         $pull: { clients: client._id },
       }),
+      MealPlan.deleteMany({ clientId: client._id }),
       WorkoutPlan.deleteMany({ clientId: client._id }),
       SessionLog.deleteMany({ clientId: client._id }),
       NutritionLog.deleteMany({ clientId: client._id }),

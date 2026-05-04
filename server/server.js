@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const aiRoutes = require('./routes/ai');
 const authRoutes = require('./routes/auth');
 const coachRoutes = require('./routes/coaches');
+const mealPlanRoutes = require('./routes/mealplans');
 const metricRoutes = require('./routes/metrics');
 const nutritionRoutes = require('./routes/nutrition');
 const ownerRoutes = require('./routes/owner');
@@ -39,6 +40,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/coaches', coachRoutes);
+app.use('/api/mealplans', mealPlanRoutes);
 app.use('/api/metrics', metricRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/owner', ownerRoutes);

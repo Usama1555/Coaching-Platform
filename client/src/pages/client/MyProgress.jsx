@@ -367,12 +367,12 @@ export default function MyProgress() {
       </section>
 
       <section className="glass-panel p-6 sm:p-8">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Recent Sessions</p>
             <h2 className="mt-3 font-display text-2xl font-bold text-white">What your last workouts looked like</h2>
           </div>
-          <Link to="/client/review/day" className="secondary-button">
+          <Link to="/client/review/day" className="secondary-button self-start">
             Open full day review
           </Link>
         </div>

@@ -90,7 +90,7 @@ export default function AIChat({ clientId }) {
 
   return (
     <div className="glass-panel p-6 sm:p-8">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-slate-400">AI Coach</p>
           <h2 className="mt-3 font-display text-2xl font-bold text-white">Ask training and nutrition questions</h2>
